@@ -38,25 +38,16 @@ app.post('/api/venues', async (req, res) => {
   }
 });
 
-app.get('/test-insert', async (req, res) => {
+app.get('/api/venues', async (req, res) => {
+  
   try {
-    const dummy = new Venue({
-      name: "Test Arena",
-      place: "Gachibowli",
-      price: 500,
-      image: "https://test.com/image.jpg",
-      location: {
-        type: "Point",
-        coordinates: [78.40, 17.45]
-      }
-    });
-    await dummy.save();
-    res.json(dummy);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+    const venues = await Venue.find();
+
+    res.json(venues);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
-
 
 // ✅ Get Nearby Venues
 app.get('/api/venues/nearby', async (req, res) => {

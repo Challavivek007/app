@@ -1,36 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, TextInput, FlatList, StyleSheet,Button,Alert } from 'react-native';
 import VenueCard from '@/components/VenueCard';
 
 
 
-const postVenue = async () => {
-  try {
-    const res = await fetch('http://192.168.X.X:3000/api/venues', { // ⬅️ Replace with your machine's IP
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: 'CBox Arena',
-        place: 'Madhapur',
-        price: 800,
-        image: 'https://example.com/image.jpg',
-        location: {
-          type: 'Point',
-          coordinates: [78.3915, 17.4442],
-        },
-      }),
-    });
 
-    const data = await res.json();
-    console.log('Venue posted:', data);
-    Alert.alert('✅ Venue created!');
-  } catch (err) {
-    console.error('Error posting venue:', err);
-    Alert.alert('❌ Failed to create venue');
-  }
-};
 
 const venues = [
   {
@@ -58,10 +32,30 @@ const venues = [
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
-  const filtered = venues.filter(v =>
+  const [venue,setvenue] = useState([]);
+  const filtered = venue.filter(v =>
     v.name.toLowerCase().includes(search.toLowerCase())
   );
 
+
+  const fetchVenue = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/venues');
+
+      const data = await res.json();
+      setvenue(data);
+      console.log(venue);
+      Alert.alert('✅ Venue created!');
+    } catch (err) {
+      console.error('Error posting venue:', err);
+      Alert.alert('❌ Failed to create venue');
+    }
+  };
+
+  useEffect(()=>{
+    fetchVenue();
+    
+  },[]);
   return (
     <View style={styles.container}>
       <TextInput
@@ -70,7 +64,7 @@ export default function HomeScreen() {
         onChangeText={setSearch}
         style={styles.searchBox}
       />
-      <Button title="➕ Post Venue" onPress={postVenue} />
+      <Button title="➕ Post Venue" onPress={fetchVenue} />
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
