@@ -12,7 +12,7 @@ export default function TabLayout() {
       tabBarInactiveTintColor: 'gray',
     })}>
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="explore" options={{ title: 'Profile' }} />
+      <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
     </Tabs>
   );
 }

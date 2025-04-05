@@ -1,6 +1,36 @@
 import { useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet,Button,Alert } from 'react-native';
 import VenueCard from '@/components/VenueCard';
+
+
+
+const postVenue = async () => {
+  try {
+    const res = await fetch('http://192.168.X.X:3000/api/venues', { // ⬅️ Replace with your machine's IP
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: 'CBox Arena',
+        place: 'Madhapur',
+        price: 800,
+        image: 'https://example.com/image.jpg',
+        location: {
+          type: 'Point',
+          coordinates: [78.3915, 17.4442],
+        },
+      }),
+    });
+
+    const data = await res.json();
+    console.log('Venue posted:', data);
+    Alert.alert('✅ Venue created!');
+  } catch (err) {
+    console.error('Error posting venue:', err);
+    Alert.alert('❌ Failed to create venue');
+  }
+};
 
 const venues = [
   {
@@ -40,6 +70,7 @@ export default function HomeScreen() {
         onChangeText={setSearch}
         style={styles.searchBox}
       />
+      <Button title="➕ Post Venue" onPress={postVenue} />
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
