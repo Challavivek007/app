@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require("mongoose");
 const cors = require('cors');
 
+const uploadRoute = require('./routes/upload');
 const Venue = require("./models/venuemodel");
 
 const User = require("./models/usermoderl");
@@ -26,7 +27,12 @@ const connectDB = async () => {
 
 connectDB();
 
-// ✅ Create Venue
+// Serve uploaded images
+app.use('/uploads', express.static('uploads'));
+
+// Route
+app.use('/api/upload', uploadRoute);
+
 app.post('/api/venues', async (req, res) => {
   try {
     console.log(req.body);

@@ -67,14 +67,14 @@ export default function HomeScreen() {
       <Button title="➕ Post Venue" onPress={fetchVenue} />
       <FlatList
         data={filtered}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id || item._id}
         renderItem={({ item }) => (
           <VenueCard
-            id={item.id}
+            id={item.id || item._id}
             name={item.name}
             place={item.place}
             price={item.price}
-            image={item.image}
+            image={typeof item.image === 'string' ? { uri: item.image } : item.image}
           />
         )}
       />
