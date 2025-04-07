@@ -4,19 +4,21 @@ import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function ProfileView() {
-  const [name, setName] = useState('John Doe');
-  const [email, setEmail] = useState('johndoe@example.com');
-  const [phone, setPhone] = useState('1234567890');
-  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [name, setName] = useState('Challa Vivek');
+  const [email, setEmail] = useState('challavivekreddy24@gmail.com');
+  const [phone, setPhone] = useState('9666123743');
+  const [address, setAddress] = useState('123 Main Street, City');
 
-  const [editingPhone, setEditingPhone] = useState(false);
-  const [editingEmail, setEditingEmail] = useState(false);
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
 
   const phoneInputRef = useRef<TextInput>(null);
   const emailInputRef = useRef<TextInput>(null);
+  const addressInputRef = useRef<TextInput>(null);
 
   const pickImage = async () => {
+    if (!isEditing) return; // Allow picking image only when editing
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -31,8 +33,7 @@ export default function ProfileView() {
   };
 
   const handleSave = () => {
-    setEditingPhone(false);
-    setEditingEmail(false);
+    setIsEditing(false);
     setIsEdited(false);
     Alert.alert('Saved', 'Your changes have been saved!');
   };
@@ -41,23 +42,23 @@ export default function ProfileView() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileContainer}>
 
-        {/* Profile Image */}
-        <View style={styles.imageEditContainer}>
-          <TouchableOpacity onPress={pickImage}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.profileImage} />
-            ) : (
-              <View style={styles.imagePlaceholder}>
-                <Text style={{ color: '#888' }}>Upload Photo</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
-            <MaterialIcons name="edit" size={20} color="#fff" />
-          </TouchableOpacity>
-        </View>
+        {/* Single Edit Icon */}
+        <TouchableOpacity style={styles.topEditIcon} onPress={() => setIsEditing(!isEditing)}>
+          <MaterialIcons name={isEditing ? 'close' : 'edit'} size={28} color="#4B5563" />
+        </TouchableOpacity>
 
-        {/* Name (centered and bold below image) */}
+        {/* Profile Image */}
+        <TouchableOpacity onPress={pickImage}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.profileImage} />
+          ) : (
+            <View style={styles.imagePlaceholder}>
+              <Text style={{ color: '#888' }}>Upload Photo</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+
+        {/* Name (Non-editable) */}
         <Text style={styles.name}>{name}</Text>
 
         {/* Phone */}
@@ -66,29 +67,18 @@ export default function ProfileView() {
             ref={phoneInputRef}
             style={[
               styles.input,
-              !editingPhone && styles.disabledInput,
-              editingPhone && styles.activeInput,
+              isEditing ? styles.activeInput : styles.disabledInput,
             ]}
             value={phone}
             onChangeText={(text) => {
               setPhone(text);
               setIsEdited(true);
             }}
-            editable={editingPhone}
+            editable={isEditing}
             keyboardType="phone-pad"
             placeholder="Phone Number"
             placeholderTextColor="#aaa"
           />
-          <TouchableOpacity
-            onPress={() => {
-              setEditingPhone(true);
-              setTimeout(() => {
-                phoneInputRef.current?.focus();
-              }, 100);
-            }}
-          >
-            <MaterialIcons name="edit" size={24} color="#4B5563" />
-          </TouchableOpacity>
         </View>
 
         {/* Email */}
@@ -97,29 +87,38 @@ export default function ProfileView() {
             ref={emailInputRef}
             style={[
               styles.input,
-              !editingEmail && styles.disabledInput,
-              editingEmail && styles.activeInput,
+              isEditing ? styles.activeInput : styles.disabledInput,
             ]}
             value={email}
             onChangeText={(text) => {
               setEmail(text);
               setIsEdited(true);
             }}
-            editable={editingEmail}
+            editable={isEditing}
             keyboardType="email-address"
             placeholder="Email Address"
             placeholderTextColor="#aaa"
           />
-          <TouchableOpacity
-            onPress={() => {
-              setEditingEmail(true);
-              setTimeout(() => {
-                emailInputRef.current?.focus();
-              }, 100);
+        </View>
+
+        {/* Address */}
+        <View style={styles.editRow}>
+          <TextInput
+            ref={addressInputRef}
+            style={[
+              styles.input,
+              isEditing ? styles.activeInput : styles.disabledInput,
+            ]}
+            value={address}
+            onChangeText={(text) => {
+              setAddress(text);
+              setIsEdited(true);
             }}
-          >
-            <MaterialIcons name="edit" size={24} color="#4B5563" />
-          </TouchableOpacity>
+            editable={isEditing}
+            placeholder="Address"
+            placeholderTextColor="#aaa"
+            multiline
+          />
         </View>
 
         {/* Save Button */}
@@ -173,10 +172,16 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     elevation: 5,
-  },
-  imageEditContainer: {
     position: 'relative',
-    marginBottom: 10,
+  },
+  topEditIcon: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    backgroundColor: '#e2e8f0',
+    borderRadius: 20,
+    padding: 8,
+    zIndex: 1,
   },
   profileImage: {
     width: 120,
@@ -184,6 +189,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderWidth: 2,
     borderColor: '#34D399',
+    marginBottom: 10,
   },
   imagePlaceholder: {
     width: 120,
@@ -192,15 +198,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e2e8f0',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  editIcon: {
-    position: 'absolute',
-    bottom: 5,
-    right: 10,
-    backgroundColor: '#34D399',
-    borderRadius: 15,
-    padding: 5,
-    elevation: 5,
+    marginBottom: 10,
   },
   name: {
     fontSize: 24,
@@ -221,13 +219,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     fontSize: 16,
-    marginRight: 10,
   },
   disabledInput: {
+    backgroundColor: 'white',
     color: 'black',
   },
   activeInput: {
     backgroundColor: 'lightgray',
+    color: 'black',
   },
   button: {
     backgroundColor: '#34D399',
