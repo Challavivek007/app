@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons'; // Import icons
 
@@ -14,6 +16,17 @@ export default function OwnerScreen() {
     closingTime: '',
     upiId: '',
   });
+  
+const id="67f0ffb781157f937845751e";
+  const getdetails= async ()=>{
+    
+    const res=await fetch(`http://localhost:3000/api/venues/${id}`);
+    console.log(res);
+  }
+
+  useEffect(()=>{
+    getdetails();
+  })
 
   const [images, setImages] = useState<string[]>([]);
 

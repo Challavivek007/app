@@ -9,6 +9,7 @@ const User = require("./models/usermoderl");
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
 app.use(cors());
 
 const connectDB = async () => {
@@ -35,7 +36,7 @@ app.use('/api/upload', uploadRoute);
 
 app.post('/api/venues', async (req, res) => {
   try {
-    console.log(req.body);
+    console.log(req.params.name);
     const venue = new Venue(req.body);  // <-- Corrected
     await venue.save();
     res.status(201).json(venue);
@@ -43,10 +44,21 @@ app.post('/api/venues', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-
+app.get('/api/venues/:id', async (req,res)=>{
+  try {
+    console.log(req.params.id);
+    const venue=await Venue.findById({_id:req.params.id});
+    console.log(venue);
+    res.json(venue);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
+})
 app.get('/api/venues', async (req, res) => {
   
   try {
+    
+    console.log(req.body);
     const venues = await Venue.find();
 
     res.json(venues);
