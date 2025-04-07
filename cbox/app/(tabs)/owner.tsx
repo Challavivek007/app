@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons'; // Import icons
 
 export default function OwnerScreen() {
   const [formData, setFormData] = useState({
@@ -36,10 +37,15 @@ export default function OwnerScreen() {
     }
   };
 
+  const handleDeleteImage = (index: number) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
+
   const handleSubmit = () => {
     console.log('Form Submitted:', formData);
     console.log('Selected Images:', images);
-    // Here you can send data to your backend
     alert('Form Submitted Successfully!');
   };
 
@@ -114,11 +120,15 @@ export default function OwnerScreen() {
 
       <View style={styles.imagePreviewContainer}>
         {images.map((uri, index) => (
-          <Image
-            key={index}
-            source={{ uri }}
-            style={styles.previewImage}
-          />
+          <View key={index} style={styles.imageWrapper}>
+            <Image
+              source={{ uri }}
+              style={styles.previewImage}
+            />
+            <TouchableOpacity style={styles.deleteIcon} onPress={() => handleDeleteImage(index)}>
+              <Ionicons name="trash" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
         ))}
       </View>
 
@@ -170,25 +180,35 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginBottom: 20,
   },
-  previewImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
+  imageWrapper: {
+    position: 'relative',
     margin: 5,
   },
+  previewImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
+  deleteIcon: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 12,
+    padding: 3,
+  },
   submitButton: {
-  backgroundColor: '#34D399',
-  paddingVertical: 12,
-  paddingHorizontal: 20,
+    backgroundColor: '#34D399',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 10,
     marginBottom: 15,
     width: '100%',
     alignItems: 'center',
-},
-submitButtonText: {
-  color: '#ffffff',
-  fontSize: 16,
-  fontWeight: 'bold',
-},
-
+  },
+  submitButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
