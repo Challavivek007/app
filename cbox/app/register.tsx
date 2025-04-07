@@ -29,24 +29,25 @@ export default function ProfileScreen() {
   const sendOtp = () => {
     const newOtp = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(newOtp);
-    Alert.alert('OTP Sent', `Your OTP is ${newOtp}`);
+    alert(`Your OTP is ${newOtp}`);
   };
-
+  
   const verifyOtp = async () => {
     if (otp === generatedOtp) {
       try {
         const user = { name, email, phone };
         await AsyncStorage.setItem('user', JSON.stringify(user));
-        Alert.alert('Success', 'OTP Verified Successfully!');
+        alert('OTP Verified Successfully!');
         router.replace('/(tabs)'); // redirect to home
       } catch (err) {
-        Alert.alert('Error', 'Something went wrong saving your data.');
+        alert('Something went wrong saving your data.');
         console.error('AsyncStorage error:', err);
       }
     } else {
-      Alert.alert('Error', 'Incorrect OTP. Please try again.');
+      alert('Incorrect OTP. Please try again.');
     }
   };
+  
 
   return (
     <View style={styles.container}>
