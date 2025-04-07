@@ -3,33 +3,6 @@ import { View, TextInput, FlatList, StyleSheet,Button,Alert } from 'react-native
 import VenueCard from '@/components/VenueCard';
 
 
-
-
-
-const venues = [
-  {
-    id: '1',
-    name: 'PowerPlay Arena',
-    place: 'Mumbai',
-    price: '1200',
-    image: require('@/assets/images/venue1.jpg'),
-  },
-  {
-    id: '2',
-    name: 'Cricket Turf Central',
-    place: 'Pune',
-    price: '1000',
-    image: require('@/assets/images/venue2.jpg'),
-  },
-  {
-    id: '3',
-    name: 'Box Cricket Zone',
-    place: 'Navi Mumbai',
-    price: '900',
-    image: require('@/assets/images/venue3.jpg'),
-  },
-];
-
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [venue,setvenue] = useState([]);
@@ -51,10 +24,9 @@ export default function HomeScreen() {
       Alert.alert('❌ Failed to create venue');
     }
   };
-
+  
   useEffect(()=>{
     fetchVenue();
-    
   },[]);
   return (
     <View style={styles.container}>
