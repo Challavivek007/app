@@ -18,7 +18,7 @@ export default VenueDetail;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // <- make sure it's not black
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
   },

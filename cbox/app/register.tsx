@@ -38,7 +38,7 @@ export default function ProfileScreen() {
         const user = { name, email, phone };
         await AsyncStorage.setItem('user', JSON.stringify(user));
         alert('OTP Verified Successfully!');
-        router.replace('/(tabs)'); // redirect to home
+        router.replace('/(tabs)'); 
       } catch (err) {
         alert('Something went wrong saving your data.');
         console.error('AsyncStorage error:', err);

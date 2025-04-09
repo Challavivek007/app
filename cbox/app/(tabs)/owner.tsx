@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
-import { Ionicons } from '@expo/vector-icons'; // Import icons
+import { Ionicons } from '@expo/vector-icons'; 
 
 export default function OwnerScreen() {
   const [formData, setFormData] = useState({
