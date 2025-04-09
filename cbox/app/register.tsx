@@ -47,7 +47,7 @@ export default function ProfileScreen() {
       alert('Incorrect OTP. Please try again.');
     }
   };
-  
+
 
   return (
     <View style={styles.container}>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: 'black', 
     justifyContent: 'center', 
-    alignItems: 'center' 
+    alignItems: 'center'
   },
   card: {
     backgroundColor: '#ffffff',
