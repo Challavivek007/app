@@ -18,7 +18,7 @@ export default function ProfileView() {
   const addressInputRef = useRef<TextInput>(null);
 
   const pickImage = async () => {
-    if (!isEditing) return; // Allow picking image only when editing
+    if (!isEditing) return; 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -42,12 +42,12 @@ export default function ProfileView() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileContainer}>
 
-        {/* Single Edit Icon */}
+        
         <TouchableOpacity style={styles.topEditIcon} onPress={() => setIsEditing(!isEditing)}>
           <MaterialIcons name={isEditing ? 'close' : 'edit'} size={28} color="#4B5563" />
         </TouchableOpacity>
 
-        {/* Profile Image */}
+        
         <TouchableOpacity onPress={pickImage}>
           {imageUri ? (
             <Image source={{ uri: imageUri }} style={styles.profileImage} />
@@ -58,10 +58,10 @@ export default function ProfileView() {
           )}
         </TouchableOpacity>
 
-        {/* Name (Non-editable) */}
+        
         <Text style={styles.name}>{name}</Text>
 
-        {/* Phone */}
+        
         <View style={styles.editRow}>
           <TextInput
             ref={phoneInputRef}
@@ -81,7 +81,7 @@ export default function ProfileView() {
           />
         </View>
 
-        {/* Email */}
+
         <View style={styles.editRow}>
           <TextInput
             ref={emailInputRef}
@@ -101,7 +101,7 @@ export default function ProfileView() {
           />
         </View>
 
-        {/* Address */}
+        
         <View style={styles.editRow}>
           <TextInput
             ref={addressInputRef}
@@ -121,14 +121,14 @@ export default function ProfileView() {
           />
         </View>
 
-        {/* Save Button */}
+        
         {isEdited && (
           <TouchableOpacity style={styles.button} onPress={handleSave}>
             <Text style={styles.buttonText}>Save Changes</Text>
           </TouchableOpacity>
         )}
 
-        {/* Options */}
+        
         <View style={styles.optionsContainer}>
           <Text style={styles.optionTitle}>Options</Text>
 

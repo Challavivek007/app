@@ -13,7 +13,7 @@ export default function VenueCard({ id, name, image, place, price }: Props) {
   const router = useRouter();
 
   return (
-    <TouchableOpacity onPress={() => router.push(`/venue/${id}`)}>
+    <TouchableOpacity onPress={() => router.push({pathname: '/venue/[id]' , params:{id:`${id}`}})}>
       <View style={styles.card}>
         <Image source={image} style={styles.image} />
         <View style={styles.info}>

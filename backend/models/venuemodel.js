@@ -5,10 +5,10 @@ const venueSchema = new mongoose.Schema({
   mobile: { type: String, required: true },
   email: { type: String },
   place: { type: String, required: true },
-  price: { type: Number, required: true }, // pricePerHour
+  price: { type: Number, required: true }, 
   sqft: { type: Number },
-  openingTime: { type: String }, // Can be string like "08:00"
-  closingTime: { type: String }, // Can be string like "22:00"
+  openingTime: { type: String }, 
+  closingTime: { type: String },
   upiId: { type: String },
   image: { type: String, required: true },
   location: {
@@ -19,7 +19,7 @@ const venueSchema = new mongoose.Schema({
       default: 'Point',
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
+      type: [Number],
       required: true,
     },
   },

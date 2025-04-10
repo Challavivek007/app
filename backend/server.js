@@ -19,25 +19,24 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
     });
-    console.log('✅ MongoDB connected');
+    console.log(' MongoDB connected');
   } catch (err) {
-    console.error('❌ MongoDB connection error:', err.message);
+    console.error(' MongoDB connection error:', err.message);
     process.exit(1);
   }
 };
 
 connectDB();
 
-// Serve uploaded images
+
 app.use('/uploads', express.static('uploads'));
 
-// Route
 app.use('/api/upload', uploadRoute);
 
 app.post('/api/venues', async (req, res) => {
   try {
     console.log(req.params.name);
-    const venue = new Venue(req.body);  // <-- Corrected
+    const venue = new Venue(req.body);  
     await venue.save();
     res.status(201).json(venue);
   } catch (err) {
@@ -67,7 +66,7 @@ app.get('/api/venues', async (req, res) => {
   }
 });
 
-// ✅ Get Nearby Venues
+
 app.get('/api/venues/nearby', async (req, res) => {
   const { lat, lng } = req.query;
   if (!lat || !lng) return res.status(400).json({ error: "lat and lng are required" });

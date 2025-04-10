@@ -38,7 +38,7 @@ export default function ProfileScreen() {
         const user = { name, email, phone };
         await AsyncStorage.setItem('user', JSON.stringify(user));
         alert('OTP Verified Successfully!');
-        router.replace('/(tabs)'); // redirect to home
+        router.replace('/(tabs)'); 
       } catch (err) {
         alert('Something went wrong saving your data.');
         console.error('AsyncStorage error:', err);
@@ -47,7 +47,7 @@ export default function ProfileScreen() {
       alert('Incorrect OTP. Please try again.');
     }
   };
-  
+
 
   return (
     <View style={styles.container}>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: 'black', 
     justifyContent: 'center', 
-    alignItems: 'center' 
+    alignItems: 'center'
   },
   card: {
     backgroundColor: '#ffffff',
