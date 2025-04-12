@@ -1,154 +1,169 @@
-
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
-
+import { View, Text, TextInput, Alert, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Ionicons } from '@expo/vector-icons'; 
+import * as Location from 'expo-location';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function OwnerScreen() {
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
     email: '',
-    pricePerHour: '',
+    place: '',
+    price: '',
     sqft: '',
     openingTime: '',
     closingTime: '',
     upiId: '',
   });
-  
-const id="67f0ffb781157f937845751e";
-  const getdetails= async ()=>{
-    
-    const res=await fetch(`http://localhost:3000/api/venues/${id}`);
-    console.log(res);
-  }
 
-  useEffect(()=>{
-    getdetails();
-  })
+  const [image, setImage] = useState<string | null>(null);
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [images, setImages] = useState<string[]>([]);
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Location permission is required.');
+        return;
+      }
+
+      const loc = await Location.getCurrentPositionAsync({});
+      setLocation({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+      });
+    })();
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const pickImages = async () => {
+  const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      allowsMultipleSelection: true,
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
 
     if (!result.canceled) {
-      const uris = result.assets.map(asset => asset.uri);
-      setImages([...images, ...uris]);
+      setImage(result.assets[0].uri);
     }
   };
 
-  const handleDeleteImage = (index: number) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
-    setImages(newImages);
-  };
+  const handleSubmit = async () => {
+    if (!image) {
+      Alert.alert('Image Required', 'Please select a venue image.');
+      return;
+    }
 
-  const handleSubmit = () => {
-    console.log('Form Submitted:', formData);
-    console.log('Selected Images:', images);
-    alert('Form Submitted Successfully!');
+    if (!location) {
+      Alert.alert('Location Required', 'Unable to fetch location.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Upload image to server
+      const formDataImage = new FormData();
+      const filename = image.split('/').pop();
+      const match = /\.(\w+)$/.exec(filename || '');
+      const type = match ? `image/${match[1]}` : `image`;
+
+      formDataImage.append('image', {
+        uri: image,
+        name: filename,
+        type,
+      } as any);
+
+      const uploadRes = await fetch('http://localhost:3000/api/upload', {
+        method: 'POST',
+        body: formDataImage,
+      });
+
+      const uploadData = await uploadRes.json();
+      const uploadedImageUrl = uploadData.imageUrl;
+
+      const payload = {
+        ...formData,
+        price: parseFloat(formData.price),
+        sqft: formData.sqft ? parseFloat(formData.sqft) : undefined,
+        image: uploadedImageUrl,
+        location: {
+          type: 'Point',
+          coordinates: [location.longitude, location.latitude],
+        },
+      };
+
+      const res = await fetch('http://localhost:3000/api/venues', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        Alert.alert('Success', 'Venue added successfully!');
+        setFormData({
+          name: '',
+          mobile: '',
+          email: '',
+          place: '',
+          price: '',
+          sqft: '',
+          openingTime: '',
+          closingTime: '',
+          upiId: '',
+        });
+        setImage(null);
+      } else {
+        Alert.alert('Error', result.error || 'Failed to add venue.');
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Error', 'Something went wrong during submission.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Box Cricket Owner Details</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Owner Name"
-        placeholderTextColor="#888"
-        value={formData.name}
-        onChangeText={text => handleInputChange('name', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Phone Number"
-        placeholderTextColor="#888"
-        keyboardType="phone-pad"
-        value={formData.mobile}
-        onChangeText={text => handleInputChange('mobile', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#888"
-        keyboardType="email-address"
-        value={formData.email}
-        onChangeText={text => handleInputChange('email', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Price Per Hour (₹)"
-        placeholderTextColor="#888"
-        keyboardType="numeric"
-        value={formData.pricePerHour}
-        onChangeText={text => handleInputChange('pricePerHour', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Size (Sqft)"
-        placeholderTextColor="#888"
-        keyboardType="numeric"
-        value={formData.sqft}
-        onChangeText={text => handleInputChange('sqft', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="UPI ID"
-        placeholderTextColor="#888"
-        value={formData.upiId}
-        onChangeText={text => handleInputChange('upiId', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Opening Time (e.g., 09:00 AM)"
-        placeholderTextColor="#888"
-        value={formData.openingTime}
-        onChangeText={text => handleInputChange('openingTime', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Closing Time (e.g., 10:00 PM)"
-        placeholderTextColor="#888"
-        value={formData.closingTime}
-        onChangeText={text => handleInputChange('closingTime', text)}
-      />
+      {['name', 'mobile', 'email', 'place', 'price', 'sqft', 'upiId', 'openingTime', 'closingTime'].map(field => (
+        <TextInput
+          key={field}
+          style={styles.input}
+          placeholder={field.replace(/([A-Z])/g, ' $1')}
+          placeholderTextColor="#888"
+          keyboardType={['mobile', 'price', 'sqft'].includes(field) ? 'numeric' : 'default'}
+          value={(formData as any)[field]}
+          onChangeText={text => handleInputChange(field, text)}
+        />
+      ))}
 
-      <TouchableOpacity style={styles.imagePickerButton} onPress={pickImages}>
-        <Text style={styles.imagePickerText}>Pick Box Cricket Photos</Text>
+      <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+        <Text style={styles.imagePickerText}>{image ? 'Change Image' : 'Pick Venue Image'}</Text>
       </TouchableOpacity>
 
-      <View style={styles.imagePreviewContainer}>
-        {images.map((uri, index) => (
-          <View key={index} style={styles.imageWrapper}>
-            <Image
-              source={{ uri }}
-              style={styles.previewImage}
-            />
-            <TouchableOpacity style={styles.deleteIcon} onPress={() => handleDeleteImage(index)}>
-              <Ionicons name="trash" size={20} color="white" />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
+      {image && (
+        <View style={styles.imagePreviewContainer}>
+          <Image source={{ uri: image }} style={styles.previewImage} />
+          <TouchableOpacity style={styles.deleteIcon} onPress={() => setImage(null)}>
+            <Ionicons name="trash" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
+      )}
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Submit Details</Text>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={isSubmitting}>
+        <Text style={styles.submitButtonText}>{isSubmitting ? 'Submitting...' : 'Submit Details'}</Text>
       </TouchableOpacity>
-
     </ScrollView>
   );
 }
@@ -173,8 +188,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
     fontSize: 16,
-    color: '#111827',
     backgroundColor: '#f9fafb',
+    color: '#111827',
   },
   imagePickerButton: {
     backgroundColor: '#34D399',
@@ -189,17 +204,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   imagePreviewContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     marginBottom: 20,
   },
-  imageWrapper: {
-    position: 'relative',
-    margin: 5,
-  },
   previewImage: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     borderRadius: 10,
   },
   deleteIcon: {
@@ -213,10 +223,7 @@ const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: '#34D399',
     paddingVertical: 12,
-    paddingHorizontal: 20,
     borderRadius: 10,
-    marginBottom: 15,
-    width: '100%',
     alignItems: 'center',
   },
   submitButtonText: {
