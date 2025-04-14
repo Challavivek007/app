@@ -21,7 +21,7 @@ export default function HomeScreen() {
       Alert.alert('✅ Venue created!');
     } catch (err) {
       console.error('Error posting venue:', err);
-      Alert.alert('❌ Failed to create venue');
+      Alert.alert('Failed to create venue');
     }
   };
   
