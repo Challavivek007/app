@@ -9,39 +9,22 @@ export default function VenueDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const dummyVenue = {
-      id: id,
-      name: 'CBox Arena',
-      place: 'Madhapur',
-      rating: 5,
-      ratingCount: 6,
-      timing: '4 AM - 12 AM',
-      location: 'Sy no.266, Mallampet (V) Dundigal Gandimaisamma (M) Medchal Malkajgiri (Dist) Hyderabad, Telangana - 502303',
-      image: 'https://tse3.mm.bing.net/th?id=OIP.P6BfH5SkpwK4e-PK74VEbQHaFj&pid=Api&P=0&h=180',
-      sports: ['Badminton', 'Box Cricket'],
-      amenities: ['Drinking Water', 'Washroom', 'Power Backup', 'Parking'],
-      rules: [
-        'Badminton Non Walking Shoes compulsory for Badminton',
-        'Shoes must be worn after entering the facility',
-        'Barefoot play is strictly prohibited',
-        'A maximum of 4 members per booking per badminton court is admissible'
-      ],
-      related: [
-        'Sports Clubs in Mailampet',
-        'Badminton Courts in Mailampet',
-        'Box-cricket Clubs in Mailampet',
-        'Badminton Courts in Hyderabad',
-        'Box-cricket'
-      ]
+    const fetchVenueData = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/venue/${id}`);
+        const data = await response.json();
+        console.log(data);
+        setVenue(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching venue data:', error);
+        setLoading(false);
+      }
     };
 
-    setTimeout(() => {
-      setVenue(dummyVenue);
-      setLoading(false);
-    }, 1000);
+    fetchVenueData();
   }, [id]);
 
-  // Icon mapping for sports
   const getSportIcon = (sport: string) => {
     switch (sport) {
       case 'Badminton':
@@ -53,7 +36,7 @@ export default function VenueDetail() {
     }
   };
 
-  // Icon mapping for amenities
+
   const getAmenityIcon = (amenity: string) => {
     switch (amenity) {
       case 'Drinking Water':
@@ -97,11 +80,6 @@ export default function VenueDetail() {
     // Handle bulk/corporate logic
   };
 
-  const handleViewMap = () => {
-    // Open map with venue location
-    const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(venue.location)}`;
-    Linking.openURL(mapUrl);
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -142,12 +120,8 @@ export default function VenueDetail() {
         <Text style={styles.sectionTitle}>Location</Text>
         <View style={styles.locationContainer}>
           <MaterialIcons name="location-on" size={20} color="#00C853" style={styles.icon} />
-          <Text style={styles.sectionContent}>{venue.location}</Text>
+          
         </View>
-        <TouchableOpacity style={styles.mapButton} onPress={handleViewMap}>
-          <MaterialCommunityIcons name="google-maps" size={18} color="#1a73e8" />
-          <Text style={styles.linkText}> View larger map</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.section}>

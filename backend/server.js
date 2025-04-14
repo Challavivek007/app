@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(cors());
 
+
 const connectDB = async () => {
   try {
     await mongoose.connect("mongodb+srv://aletisiddhureddy:o2JY0wR6sDBvlsNw@cluster0.wy5pyhr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
@@ -27,15 +28,12 @@ const connectDB = async () => {
 };
 
 connectDB();
-
-
+app.use('/api', uploadRoute);
 app.use('/uploads', express.static('uploads'));
-
-app.use('/api/upload', uploadRoute);
 
 app.post('/api/venues', async (req, res) => {
   try {
-    console.log(req.params.name);
+    console.log(req.params);
     const venue = new Venue(req.body);  
     await venue.save();
     res.status(201).json(venue);
@@ -43,7 +41,7 @@ app.post('/api/venues', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-app.get('/api/venues/:id', async (req,res)=>{
+app.get('/api/venue/:id', async (req,res)=>{
   try {
     console.log(req.params.id);
     const venue=await Venue.findById({_id:req.params.id});

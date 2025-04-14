@@ -13,11 +13,12 @@ export default function HomeScreen() {
 
   const fetchVenue = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/venues');
+      const res = await fetch('http://192.168.1.34:3000/api/venues');
 
       const data = await res.json();
+      console.log(data);
       setvenue(data);
-      console.log(venue);
+      
       Alert.alert('✅ Venue created!');
     } catch (err) {
       console.error('Error posting venue:', err);
@@ -46,7 +47,7 @@ export default function HomeScreen() {
             name={item.name}
             place={item.place}
             price={item.price}
-            image={typeof item.image === 'string' ? { uri: item.image } : item.image}
+            image={`http://192.168.1.34:3000/uploads/${item.id || item._id}-image.jpg`}
           />
         )}
       />

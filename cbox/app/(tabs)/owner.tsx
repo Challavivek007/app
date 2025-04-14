@@ -4,17 +4,25 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 
+const BASE_URL = 'http://192.168.1.34:3000'; // Replace with your local IP
+
 export default function OwnerScreen() {
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
     email: '',
     place: '',
+    address: '',
     price: '',
     sqft: '',
     openingTime: '',
     closingTime: '',
+    timing: '',
     upiId: '',
+    sports: '',
+    amenities: '',
+    rules: '',
+    related: '',
   });
 
   const [image, setImage] = useState<string | null>(null);
@@ -66,7 +74,7 @@ export default function OwnerScreen() {
     setIsSubmitting(true);
 
     try {
-      // Upload image to server
+      // Upload image
       const formDataImage = new FormData();
       const filename = image.split('/').pop();
       const match = /\.(\w+)$/.exec(filename || '');
@@ -78,14 +86,18 @@ export default function OwnerScreen() {
         type,
       } as any);
 
-      const uploadRes = await fetch('http://localhost:3000/api/upload', {
+      const uploadRes = await fetch(`${BASE_URL}/api/upload`, {
         method: 'POST',
         body: formDataImage,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       const uploadData = await uploadRes.json();
       const uploadedImageUrl = uploadData.imageUrl;
 
+      // Prepare payload
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
@@ -95,9 +107,13 @@ export default function OwnerScreen() {
           type: 'Point',
           coordinates: [location.longitude, location.latitude],
         },
+        sports: formData.sports.split(',').map(s => s.trim()).filter(Boolean),
+        amenities: formData.amenities.split(',').map(a => a.trim()).filter(Boolean),
+        rules: formData.rules.split(',').map(r => r.trim()).filter(Boolean),
+        related: formData.related.split(',').map(r => r.trim()).filter(Boolean),
       };
 
-      const res = await fetch('http://localhost:3000/api/venues', {
+      const res = await fetch(`${BASE_URL}/api/venues`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,11 +130,17 @@ export default function OwnerScreen() {
           mobile: '',
           email: '',
           place: '',
+          address: '',
           price: '',
           sqft: '',
           openingTime: '',
           closingTime: '',
+          timing: '',
           upiId: '',
+          sports: '',
+          amenities: '',
+          rules: '',
+          related: '',
         });
         setImage(null);
       } else {
@@ -136,7 +158,11 @@ export default function OwnerScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Box Cricket Owner Details</Text>
 
-      {['name', 'mobile', 'email', 'place', 'price', 'sqft', 'upiId', 'openingTime', 'closingTime'].map(field => (
+      {[
+        'name', 'mobile', 'email', 'place', 'address', 'price', 'sqft', 'upiId',
+        'openingTime', 'closingTime', 'timing',
+        'sports', 'amenities', 'rules', 'related'
+      ].map(field => (
         <TextInput
           key={field}
           style={styles.input}
