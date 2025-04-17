@@ -37,7 +37,7 @@ export default function HomeScreen() {
         onChangeText={setSearch}
         style={styles.searchBox}
       />
-      <Button title="➕ Post Venue" onPress={fetchVenue} />
+      <Button title="Post Venue" onPress={fetchVenue} />
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id || item._id}
