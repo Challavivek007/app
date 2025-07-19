@@ -37,45 +37,21 @@ export default function VenueDetail() {
   const [bookingStep, setBookingStep] = useState(0); // 0: not started, 1: select slot, 2: confirm details
 
   useEffect(() => {
-    const fetchVenue = () => {
+    const fetchVenueData = async () => {
       try {
-        // Simulate API call with timeout
-        setTimeout(() => {
-          const dummyVenue: Venue = {
-            id: id as string,
-            name: 'CBox Arena',
-            place: 'Madhapur',
-            rating: 5,
-            ratingCount: 6,
-            timing: '4 AM - 12 AM',
-            location: 'Sy no.266, Mallampet (V) Dundigal Gandimaisamma (M) Medchal Malkajgiri (Dist) Hyderabad, Telangana - 502303',
-            image: 'https://tse3.mm.bing.net/th?id=OIP.P6BfH5SkpwK4e-PK74VEbQHaFj&pid=Api&P=0&h=180',
-            sports: ['Badminton', 'Box Cricket'],
-            amenities: ['Drinking Water', 'Washroom', 'Power Backup', 'Parking'],
-            rules: [
-              'Badminton Non Walking Shoes compulsory for Badminton',
-              'Shoes must be worn after entering the facility',
-              'Barefoot play is strictly prohibited',
-              'A maximum of 4 members per booking per badminton court is admissible'
-            ],
-            related: [
-              'Sports Clubs in Mailampet',
-              'Badminton Courts in Mailampet',
-              'Box-cricket Clubs in Mailampet',
-              'Badminton Courts in Hyderabad',
-              'Box-cricket'
-            ]
-          };
-          setVenue(dummyVenue);
-          setLoading(false);
-        }, 1000);
-      } catch (err) {
-        setError('Failed to load venue details');
+        const response = await fetch(`http://localhost:3000/api/venue/${id}`);
+        const data = await response.json();
+        console.log(data);
+        setVenue(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching venue data:', error);
+
         setLoading(false);
       }
     };
 
-    fetchVenue();
+    fetchVenueData();
   }, [id]);
 
   const getSportIcon = (sport: string) => {
@@ -88,6 +64,7 @@ export default function VenueDetail() {
         return <MaterialIcons name="sports" size={24} color="#00C853" />;
     }
   };
+
 
   const getAmenityIcon = (amenity: string) => {
     switch (amenity) {
@@ -198,6 +175,9 @@ export default function VenueDetail() {
     );
   }
 
+
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={{ uri: venue.image }} style={styles.image} />
@@ -237,12 +217,8 @@ export default function VenueDetail() {
         <Text style={styles.sectionTitle}>Location</Text>
         <View style={styles.locationContainer}>
           <MaterialIcons name="location-on" size={20} color="#00C853" style={styles.icon} />
-          <Text style={styles.sectionContent}>{venue.location}</Text>
+          
         </View>
-        <TouchableOpacity style={styles.mapButton} onPress={handleViewMap}>
-          <MaterialCommunityIcons name="google-maps" size={18} color="#1a73e8" />
-          <Text style={styles.linkText}> View larger map</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
