@@ -13,7 +13,7 @@ export default function HomeScreen() {
 
   const fetchVenue = async () => {
     try {
-      const res = await fetch('http://192.168.1.34:3000/api/venues');
+      const res = await fetch('http://localhost:3000/api/venues');
 
       const data = await res.json();
       console.log(data);
@@ -38,7 +38,7 @@ export default function HomeScreen() {
         style={styles.searchBox}
       />
       <Button title="Post Venue" onPress={fetchVenue} />
-      <FlatList
+cd       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id || item._id}
         renderItem={({ item }) => (
@@ -47,7 +47,7 @@ export default function HomeScreen() {
             name={item.name}
             place={item.place}
             price={item.price}
-            image={`http://192.168.1.34:3000/uploads/${item.id || item._id}-image.jpg`}
+            image={`http://localhost:3000/uploads/${item.id || item._id}-image.jpg`}
           />
         )}
       />

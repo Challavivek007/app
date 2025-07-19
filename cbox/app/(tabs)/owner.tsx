@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 
-const BASE_URL = 'http://192.168.1.34:3000'; // Replace with your local IP
+const BASE_URL = 'http://localhost:3000'; // Replace with your local IP
 
 export default function OwnerScreen() {
   const [formData, setFormData] = useState({
